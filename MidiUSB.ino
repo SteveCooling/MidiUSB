@@ -1,5 +1,6 @@
 #include <MIDI.h>
-#include <EveryTimer.h>
+//#include <EveryTimer.h>
+#include <volume2.h>
 
 #if defined(USBCON)
 #include <midi_UsbTransport.h>
@@ -19,9 +20,10 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 
 // --
 
-EveryTimer timer;
+//EveryTimer timer;
+Volume vol;
 
-const int TONEPIN = 10;
+const int TONEPIN = 9;
 int NOTE = 0;
 unsigned long NOTE_START;  // When the current note started
 unsigned long SOUND_START; // When the current sound started (use for evolving vibrato)
@@ -49,12 +51,13 @@ void oscillatorCallback() {
       (1-((float)millis_from_start / (GLISSANDO*8))) * (float)GLISS_OFFSET
       : 0;
     //Serial.println(String(gliss_offset));
-    tone(
+    vol.tone(tone_freq(NOTE) + offset + gliss_offset, SQUARE, 255);
+    /*tone(
       TONEPIN,
       tone_freq(NOTE) + offset + gliss_offset
-    );
+    );*/
   } else {
-    noTone(TONEPIN);
+    vol.noTone();
   }
 }
 
@@ -104,11 +107,16 @@ void setup() {
     MIDI.begin();
     MIDI.setHandleNoteOn(handleNoteOn);
     MIDI.setHandleNoteOff(handleNoteOff);
-    timer.Every(10, oscillatorCallback);
+    //timer.Every(10, oscillatorCallback);
+    // Ready sound
+    vol.tone(440, SQUARE, 255);
+    vol.delay(200);
+    vol.noTone();
     Serial.println("Arduino ready.");
 }
 
 void loop() {
     MIDI.read();
-    timer.Update();
+    //oscillatorCallback();
+    //timer.Update();
 }
