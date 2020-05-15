@@ -1,5 +1,6 @@
 {
     "board": "arduino:avr:leonardo",
     "port": "/dev/cu.usbmodemMIDI1",
-    "sketch": "MidiUSB.ino"
+    "sketch": "MidiUSB.ino",
+    "programmer": "AVRISP mkII"
 }
